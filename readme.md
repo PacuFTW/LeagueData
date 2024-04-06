@@ -23,26 +23,28 @@ These instructions will guide you through setting up the project on your local m
 
 1. Clone the repository to your local machine:
 
-```git clone https://github.com/your-username/your-repo.git```
+`git clone https://github.com/your-username/your-repo.git`
 
 2. Move to the folder
 
-```cd your-repo```
+`cd your-repo`
 
 3. Start the docker
 
-```docker-compose up --build```
+`docker-compose up --build`
 
 4. Take a look at the result:
 
 Open a browser and insert:
-```[your_ip]:8000```
+`[your_ip]:8000`
 
 ### Running the application
-If you want to run it in the background you can use ```-d``` flag:
-```docker-compose up --build -d```
+
+If you want to run it in the background you can use `-d` flag:
+`docker-compose up --build -d`
 
 ### Writing a new API
+
 ```
 @app.get("/your_endpoint/")
 def your_api_function():
@@ -51,6 +53,7 @@ def your_api_function():
 ```
 
 If you want to get parameters from the request:
+
 ```
 @app.get("/your_endpoint/{Value}")
 def your_api_function(Value):
@@ -74,9 +77,3 @@ def your_api_function(item:Item):
     # Your API logic here
     return {"message": "Hello from your new API!"}
 ```
-
-### How will it looks like
-![Email sender](images/email_sender.PNG)
-
-![OPC-UA_API](images/OPCUA.PNG)
-
