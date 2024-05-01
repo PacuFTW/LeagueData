@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -90,87 +90,6 @@ def get_profile_data(server: str, name: str, tagline: str):
     app.profileData = soup
     return {"message": "Data fetched successfully"}
 
-@router.get("/profile-data")
-def get_profile_data():
-    return {f"data": str({app.profileData})}
-
-@router.get("/level")
-def get_level():
-    try:
-        level_element = app.profileData.find(class_='bannerSubtitle')
-        level_helper = level_element.text.strip()
-        level_helper_1 = re.sub(r'-.+', '', level_helper)
-        level_helper_2 = re.findall(r'\d+', level_helper_1)
-        return {"level": int(level_helper_2[0])}
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
-
-@router.get("/rank")
-def get_rank():
-    try:
-        rank_element = app.profileData.find(class_='leagueTier')
-
-        rank_helper = rank_element.text.strip()
-        rank = re.sub(r'\s+', ' ', rank_helper) 
-
-        return {"rank": rank}
-
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
-
-@router.get("/lp")
-def get_lp():
-    try:
-        lp_element = app.profileData.find(class_='leaguePoints')
-
-        lp_helper = lp_element.text.strip()
-        lp = int(re.findall(r'\d+', lp_helper)[0])
-
-        return {"lp": lp}
-
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
-    
-@router.get("/winrate")
-def get_winrate():
-    try:
-        wins_element = app.profileData.find(class_='winsNumber')
-        losses_element = app.profileData.find(class_='lossesNumber')
-
-        wins = int(wins_element.text.strip())
-        losses = int(losses_element.text.strip())
-        winrate = round((wins/(wins+losses))*100, 3)
-
-        return {"losses": losses, "wins": wins, "winrate": winrate}
-
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
-    
-@router.get("/ranking")
-def get_ranking():
-    try:
-        rank_element = app.profileData.find(class_='rank')
-        global_rank_element = rank_element.find(class_='highlight')
-        regional_rank_element = rank_element.find(class_='regionalRank')
-        top_rank_percentage_element = rank_element.find(class_='topRankPercentage')
-
-        top_rank_percentage_helper = str(top_rank_percentage_element.string)
-        global_rank_helper = str(global_rank_element.string)
-        regional_rank_helper = re.findall(r'\d+(?:,\d+)?', regional_rank_element.string)[0]
-
-        top_rank_percentage_number = float(re.findall(r'\d+(?:.\d+)?', top_rank_percentage_helper)[0])
-        global_rank_number = re.sub(r',','', str(global_rank_helper))
-        regional_rank_number = re.sub(r',','', regional_rank_helper)
-
-        return {"globalrank": global_rank_number, "toprankpercentage": top_rank_percentage_number, "regionalrank": regional_rank_number}
-    
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
     
 @router.get("/getProfile")
 def get_profile():
@@ -184,6 +103,21 @@ def get_profile():
 
         rank_helper = rank_element.text.strip()
         rank = re.sub(r'\s+', ' ', rank_helper) 
+
+        rank_wo_div = rank.split()[0]
+        if(rank_wo_div == "Iron"): rank_num = 1
+        elif (rank_wo_div == "Bronze"): rank_num = 2
+        elif (rank_wo_div == "Silver"): rank_num = 3
+        elif (rank_wo_div == "Gold"): rank_num = 4
+        elif (rank_wo_div == "Platinum"): rank_num = 5
+        elif (rank_wo_div == "Emerald"): rank_num = 6
+        elif (rank_wo_div == "Diamond"): rank_num = 7
+        elif (rank_wo_div == "Master"): rank_num = 8
+        elif (rank_wo_div == "GrandMaster"): rank_num = 9
+        elif (rank_wo_div == "Challenger"): rank_num = 10
+
+        icon_element = app.profileData.find(class_='img').find_next('img')
+        icon = re.sub(r'/','',icon_element['src'], count=2)
 
         lp_element = app.profileData.find(class_='leaguePoints')
 
@@ -211,7 +145,9 @@ def get_profile():
         regional_rank_number = re.sub(r',','', regional_rank_helper)
 
         return {"level": int(level[0]), 
+                "icon": icon,
                 "rank": rank,
+                "rankicon": rank_num,
                 "lp": lp,
                 "losses": losses,
                 "wins": wins,
@@ -223,7 +159,7 @@ def get_profile():
     
     except Exception as e:
         print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
+        raise HTTPException(status_code=478, detail="Error getting data!")
 
 
 
