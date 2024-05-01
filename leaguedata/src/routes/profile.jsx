@@ -124,10 +124,10 @@ const ProfileData = ({ profile }) => {
             </div>
             <div className="mt-4 bg-gray-700 p-6 rounded-lg shadow-lg">
                 <div className="flex justify-between mb-4">
-                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ALL ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ALL)}>All</button>
-                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.SOLO ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.SOLO)}>Solo</button>
-                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.FLEX ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.FLEX)}>Flex</button>
-                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ARAM ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ARAM)}>ARAM</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ALL ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleFilterChampions(GameModes.ALL)}>All</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.SOLO ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleFilterChampions(GameModes.SOLO)}>Solo</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.FLEX ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleFilterChampions(GameModes.FLEX)}>Flex</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ARAM ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleFilterChampions(GameModes.ARAM)}>ARAM</button>
                 </div>
                 {champions && <Champions champions={champions} />}
             </div>

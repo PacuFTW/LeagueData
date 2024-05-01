@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,7 +14,11 @@ const Plots = {
 
 const ShowGraphs = () => {
   const [activePlot, setActivePlot] = useState(null);
-  const [img, setImg] = useState(null);
+  const [img, setImg] = useState('');
+
+  useEffect(() =>{
+      console.log('idk')
+  },[img])
 
   const handleShowImage = (plot) => {
     if (plot == activePlot) {
@@ -22,9 +26,10 @@ const ShowGraphs = () => {
       setActivePlot(null);
     }
     else {
-      setActivePlot(mode)
-      axios.get("http://localhost:2024/api/" + plot).then(response => {
-        setImg(response.data)
+      setActivePlot(plot)
+      axios.get("http://localhost:2024/api/" + plot, { responseType: 'blob' }).then(response => {
+        const imageUrl = URL.createObjectURL(response.data);
+        setImg(imageUrl);
         toast.success('Successfully updated champions data for "' + plot + '" plot.')
       }).catch(e => {
         toast.error("Error getting data of " + plot + " plot.");
@@ -32,20 +37,26 @@ const ShowGraphs = () => {
     }
   };
 
+  const handleClick = (event) => {
+    event.preventDefault();
+
+    window.open(event.target.src, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <div>
       <div className="mt-4 bg-gray-700 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between mb-4">
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Popularity_plot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Popularity_plot)}>Popularity plot</button>
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_vs_Banrate ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_vs_Banrate)}>Winrate vs Banrate</button>
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_heatmaps ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_heatmaps)}>Winrate heatmaps</button>
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Average_Stats_radar ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Average_Stats_radar)}>Average stats</button>
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_boxplot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_boxplot)}>Winrate boxplot</button>
-          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Correlation_Matrix ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Correlation_Matrix)}>Correlation Matrix</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Popularity_plot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Popularity_plot)}>Popularity plot</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_vs_Banrate ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Winrate_vs_Banrate)}>Winrate vs Banrate</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_heatmaps ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Winrate_heatmaps)}>Winrate heatmaps</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Average_Stats_radar ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Average_Stats_radar)}>Average stats</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_boxplot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Winrate_boxplot)}>Winrate boxplot</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Correlation_Matrix ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 hover:bg-gray-600 text-gray-700 hover:text-gray-200'}`} onClick={() => handleShowImage(Plots.Correlation_Matrix)}>Correlation Matrix</button>
         </div>
       </div>
-      {img && (<div>
-        test
+      {activePlot && (<div className='flex justify-center'>
+        <img src={img} alt="plot" onClick={handleClick} className='hover:cursor-pointer'/>
       </div>)}
     </div>
   );
