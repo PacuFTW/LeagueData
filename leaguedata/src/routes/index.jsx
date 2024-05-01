@@ -1,9 +1,59 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const Plots = {
+  Popularity_plot: 'get-pop-plot',
+  Winrate_vs_Banrate: 'wr-vs-br',
+  Winrate_heatmaps: 'wr-heatmaps',
+  Average_Stats_radar: 'avg-stats-radar',
+  Winrate_boxplot: 'wr-box',
+  Correlation_Matrix: 'corr-mtx'
+};
+
+const ShowGraphs = () => {
+  const [activePlot, setActivePlot] = useState(null);
+  const [img, setImg] = useState(null);
+
+  const handleShowImage = (plot) => {
+    if (plot == activePlot) {
+      setImg(null);
+      setActivePlot(null);
+    }
+    else {
+      setActivePlot(mode)
+      axios.get("http://localhost:2024/api/" + plot).then(response => {
+        setImg(response.data)
+        toast.success('Successfully updated champions data for "' + plot + '" plot.')
+      }).catch(e => {
+        toast.error("Error getting data of " + plot + " plot.");
+      })
+    }
+  };
+
+  return (
+    <div>
+      <div className="mt-4 bg-gray-700 p-6 rounded-lg shadow-lg">
+        <div className="flex justify-between mb-4">
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Popularity_plot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Popularity_plot)}>Popularity plot</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_vs_Banrate ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_vs_Banrate)}>Winrate vs Banrate</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_heatmaps ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_heatmaps)}>Winrate heatmaps</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Average_Stats_radar ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Average_Stats_radar)}>Average stats</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Winrate_boxplot ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Winrate_boxplot)}>Winrate boxplot</button>
+          <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activePlot === Plots.Correlation_Matrix ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleShowImage(Plots.Correlation_Matrix)}>Correlation Matrix</button>
+        </div>
+      </div>
+      {img && (<div>
+        test
+      </div>)}
+    </div>
+  );
+};
 
 const Index = () => {
   const [selectedRank, setSelectedRank] = useState('');
-  const [userData, setUserData] = useState(null);
+  const [showGraphs, setShowGraphs] = useState(null);
   const ranks = ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger'];
 
   const handleChange = (event) => {
@@ -11,19 +61,12 @@ const Index = () => {
   };
 
   const fetchData = async () => {
-    axios.get(`http://localhost:2024/api/champion-data/${selectedRank.toLowerCase()}`).then(response=>{
-      setUserData(response.data);
-    }).catch(e =>{
-      console.error(e);
+    axios.get(`http://localhost:2024/api/champion-data/${selectedRank.toLowerCase()}`).then(response => {
+      setShowGraphs(true);
+      toast.success('Successfully loaded champion data for: "' + selectedRank + '" rank.')
+    }).catch(e => {
+      toast.error("Something went wrong.");
     });
-  };
-
-  const UserDataComponent = ({ userData }) => {
-    return (
-      <div>
-        <p>randombullshit</p>
-      </div>
-    );
   };
 
   return (
@@ -44,7 +87,19 @@ const Index = () => {
       >
         Get Data
       </button>
-      {userData && <UserDataComponent userData={userData} />}
+      {showGraphs && <ShowGraphs />}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="dark"
+      />
     </div>
   );
 };
