@@ -117,7 +117,8 @@ def get_profile():
         elif (rank_wo_div == "Challenger"): rank_num = 10
 
         icon_element = app.profileData.find(class_='img').find_next('img')
-        icon = re.sub(r'/','',icon_element['src'], count=2)
+        icon = re.search(r'.*?(\d+\.png)',icon_element['src'])
+        icon = icon.group(1)
 
         lp_element = app.profileData.find(class_='leaguePoints')
 
@@ -210,7 +211,7 @@ def get_all_played(queue: QueueType):
     
     except Exception as e:
         print(f"Error fetching data: {e}")
-        return {"error": f"Error fetching data: {e}"}
+        raise HTTPException(status_code=478, detail="Error getting data!")
     
 class RankType(str, Enum):
     iron = "iron"

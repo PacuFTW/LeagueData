@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LolServer = {
     NA: "na",
@@ -27,6 +29,42 @@ const GameModes = {
 };
 
 const Champions = ({ champions }) => {
+    return (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-white">
+            {Object.values(champions).map((champion, index) => (
+                <div key={index} className="border rounded-lg p-4 bg-gray-800 relative">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-xl font-bold mb-2">{champion.name}</h2>
+                        <img src={"https://static.bigbrain.gg/assets/lol/riot_static/14.8.1/img/champion/" + champion.name + ".png"} alt={champion.name} className="h-16 w-16 mr-2" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <p className="text-gray-200 font-bold">Top Rank:</p>
+                            <p className="italic">{champion.top_rank ? champion.top_rank : 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-200 font-bold">Regional Rank:</p>
+                            <p className="italic">{champion.regional_rank ? champion.regional_rank : 'N/A'}</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div>
+                            <p className="text-gray-200 font-bold">Kills:</p>
+                            <p className="italic text-blue-400">{champion.kills}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-200 font-bold">Deaths:</p>
+                            <p className="italic text-red-500">{champion.deaths}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-200 font-bold">Assists:</p>
+                            <p className="italic text-yellow-300">{champion.assists}</p>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 
 }
 
@@ -35,16 +73,27 @@ const ProfileData = ({ profile }) => {
     const [activeMode, setActiveMode] = useState(null);
 
     const handleFilterChampions = (mode) => {
-        setActiveMode(mode)
-        console.log("Filtering champions for mode:", mode);
+        if (mode == activeMode) {
+            setChampions(null);
+            setActiveMode(null);
+        }
+        else {
+            setActiveMode(mode)
+            axios.get("http://localhost:2024/api/all-played?queue=" + mode).then(response => {
+                setChampions(response.data.data)
+                toast.success('Successfully updated champions data for "' + mode + '" queue.')
+            }).catch(e => {
+                toast.error("Error getting data of " + mode + " queue.");
+            })
+        }
     };
 
     return (
         <div className="text-white">
-            <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
-                <div className="flex items-center mb-4">
+            <div className="flex justify-between items-center bg-gray-700 px-10 py-1 rounded-lg shadow-lg">
+                <div className="flex items-center">
                     <div className="mr-4">
-                        <img src={"https://" + profile.icon} alt="Summoner Icon" className="w-20 h-20 rounded-full" />
+                        <img src={"https://static.bigbrain.gg/assets/lol/riot_static/14.8.1/img/profileicon/" + profile.icon} alt="Summoner Icon" className="w-32 h-32 rounded-full" />
                     </div>
                     <div className="flex items-start gap-3">
                         <div>
@@ -75,10 +124,10 @@ const ProfileData = ({ profile }) => {
             </div>
             <div className="mt-4 bg-gray-700 p-6 rounded-lg shadow-lg">
                 <div className="flex justify-between mb-4">
-                    <button className={`flex-1 px-4 py-2 rounded-lg ${activeMode === GameModes.ALL ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ALL)}>All</button>
-                    <button className={`flex-1 px-4 py-2 rounded-lg ${activeMode === GameModes.SOLO ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.SOLO)}>Solo</button>
-                    <button className={`flex-1 px-4 py-2 rounded-lg ${activeMode === GameModes.FLEX ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.FLEX)}>Flex</button>
-                    <button className={`flex-1 px-4 py-2 rounded-lg ${activeMode === GameModes.ARAM ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ARAM)}>ARAM</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ALL ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ALL)}>All</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.SOLO ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.SOLO)}>Solo</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.FLEX ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.FLEX)}>Flex</button>
+                    <button className={`flex-1 px-4 py-2 mx-2 rounded-lg ${activeMode === GameModes.ARAM ? 'bg-indigo-800 text-white ring-2 ring-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => handleFilterChampions(GameModes.ARAM)}>ARAM</button>
                 </div>
                 {champions && <Champions champions={champions} />}
             </div>
@@ -92,7 +141,6 @@ const Profile = () => {
     const [server, setServer] = useState(LolServer.EUW);
     const [username, setUsername] = useState("");
     const [profile, setProfile] = useState(null);
-    const [topChamps, setTopChamps] = useState(null)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -113,11 +161,12 @@ const Profile = () => {
                 profiletemp.globalrank = response.data.globalrank;
                 profiletemp.toprankpercentage = response.data.toprankpercentage;
                 profiletemp.regionalrank = response.data.regionalrank;
-                console.log(response.data)
                 setProfile(profiletemp);
             }).catch(e => {
-                console.error(e);
+                toast.error(e);
             });
+        }).catch(e => {
+            toast.error("Error getting profile data!");
         });
 
     };
@@ -169,6 +218,18 @@ const Profile = () => {
                 </>
             )}
             {profile && <ProfileData profile={profile} />}
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss={false}
+                draggable
+                pauseOnHover={false}
+                theme="dark"
+            />
         </div>
     );
 };
