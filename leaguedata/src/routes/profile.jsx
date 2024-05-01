@@ -5,7 +5,18 @@ const LolServer = {
     NA: "na",
     EUW: "euw",
     EUNE: "eune",
-    // Add more servers as needed
+    BR: "br",
+    KR: "kr",
+    SG: "sg",
+    TR: "tr",
+    VN: "vn",
+    LAS: "las",
+    LAN: "lan",
+    OE: "oce",
+    RU: "ru",
+    PH: "ph",
+    TW: "tw",
+    TH: "th"
 };
 
 // Component to display profile data
@@ -29,20 +40,33 @@ const Profile = () => {
     const [username, setUsername] = useState("");
     // State for profile data
     const [profile, setProfile] = useState(null);
+    const [topChamps, setTopChampts] = useState(null)
 
     // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         let profiletemp = {};
         profiletemp.name = username;
+        profiletemp.tagline = tagline;
+        profiletemp.server = server;
         axios.get("http://localhost:2024/api/profile-data/" + server + "/" + username + "/" + tagline,).then(response => {
-            axios.all([
-                axios.get("http://localhost:2024/api/rank"),
-                axios.get("http://localhost:2024/api/lp"),
-                axios.get("http://localhost:2024/api/level"),
-            ]).then(axios.spread((rank,lp, level) => {
-                console.log('rank:', rank.data.rank,', lp', lp.data.lp, ', level', level.data.level)
-              }));
+            axios.get("http://localhost:2024/api/getProfile").then(response => {
+                if (response.data.error != undefined) console.error(response.data.error);
+                else {
+                    profiletemp.rank = response.data.rank;
+                    profiletemp.lp = response.data.lp;
+                    profiletemp.level = response.data.level;
+                    profiletemp.wins = response.data.wins;
+                    profiletemp.losses = response.data.losses;
+                    profiletemp.winrate = response.data.winrate;
+                    profiletemp.globalrank = response.data.globalrank;
+                    profiletemp.toprankingpercentage = response.data.toprankingpercentage;
+                    profiletemp.regionalrank = response.data.regionalrank;
+                    setProfile(profiletemp);
+                }
+            }).catch(e => {
+                console.error(e);
+            });
         });
 
     };

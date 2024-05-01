@@ -144,7 +144,7 @@ def get_winrate():
         losses = int(losses_element.text.strip())
         winrate = round((wins/(wins+losses))*100, 3)
 
-        return {"Losses": losses, "Wins": wins, "Winrate": winrate}
+        return {"losses": losses, "wins": wins, "winrate": winrate}
 
     except Exception as e:
         print(f"Error fetching data: {e}")
@@ -166,12 +166,67 @@ def get_ranking():
         global_rank_number = re.sub(r',','', str(global_rank_helper))
         regional_rank_number = re.sub(r',','', regional_rank_helper)
 
-        return {"Global Rank": global_rank_number, "Top Rank Percentage": top_rank_percentage_number, "Regional Rank": regional_rank_number}
+        return {"globalrank": global_rank_number, "toprankpercentage": top_rank_percentage_number, "regionalrank": regional_rank_number}
     
     except Exception as e:
         print(f"Error fetching data: {e}")
         return {"error": f"Error fetching data: {e}"}
     
+@router.get("/getProfile")
+def get_profile():
+    try:
+        level_element = app.profileData.find(class_='bannerSubtitle')
+        level_helper = level_element.text.strip()
+        level_helper_1 = re.sub(r'-.+', '', level_helper)
+        level = re.findall(r'\d+', level_helper_1)
+
+        rank_element = app.profileData.find(class_='leagueTier')
+
+        rank_helper = rank_element.text.strip()
+        rank = re.sub(r'\s+', ' ', rank_helper) 
+
+        lp_element = app.profileData.find(class_='leaguePoints')
+
+        lp_helper = lp_element.text.strip()
+        lp = int(re.findall(r'\d+', lp_helper)[0])
+
+        wins_element = app.profileData.find(class_='winsNumber')
+        losses_element = app.profileData.find(class_='lossesNumber')
+
+        wins = int(wins_element.text.strip())
+        losses = int(losses_element.text.strip())
+        winrate = round((wins/(wins+losses))*100, 3)
+
+        rank_element = app.profileData.find(class_='rank')
+        global_rank_element = rank_element.find(class_='highlight')
+        regional_rank_element = rank_element.find(class_='regionalRank')
+        top_rank_percentage_element = rank_element.find(class_='topRankPercentage')
+
+        top_rank_percentage_helper = str(top_rank_percentage_element.string)
+        global_rank_helper = str(global_rank_element.string)
+        regional_rank_helper = re.findall(r'\d+(?:,\d+)?', regional_rank_element.string)[0]
+
+        top_rank_percentage_number = float(re.findall(r'\d+(?:.\d+)?', top_rank_percentage_helper)[0])
+        global_rank_number = re.sub(r',','', str(global_rank_helper))
+        regional_rank_number = re.sub(r',','', regional_rank_helper)
+
+        return {"level": int(level[0]), 
+                "rank": rank,
+                "lp": lp,
+                "losses": losses,
+                "wins": wins,
+                "winrate": winrate,
+                "globalrank": global_rank_number,
+                "toprankpercentage": top_rank_percentage_number,
+                "regionalrank": regional_rank_number
+            }
+    
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return {"error": f"Error fetching data: {e}"}
+
+
+
 class QueueType(str, Enum):
     all = "all"
     solo = "solo"
