@@ -91,7 +91,7 @@ def get_rank():
         rank_helper = rank_element.text.strip()
         rank = re.sub(r'\s+', ' ', rank_helper) 
 
-        return {"User's rank": rank}
+        return {"rank": rank}
 
     except Exception as e:
         print(f"Error fetching data: {e}")
@@ -105,7 +105,7 @@ def get_lp():
         lp_helper = lp_element.text.strip()
         lp = int(re.findall(r'\d+', lp_helper)[0])
 
-        return {"User's LP": lp}
+        return {"lp": lp}
 
     except Exception as e:
         print(f"Error fetching data: {e}")
