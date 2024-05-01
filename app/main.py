@@ -2,15 +2,26 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import APIRouter
 import requests
 import re
 from bs4 import BeautifulSoup
 from enum import Enum
 
+origins = ["*"]
+
 app = FastAPI()
 app.profileData = {}
 app.championData = {}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
@@ -82,6 +93,18 @@ def get_profile_data(server: str, name: str, tagline: str):
 @router.get("/profile-data")
 def get_profile_data():
     return {f"data": str({app.profileData})}
+
+@router.get("/level")
+def get_level():
+    try:
+        level_element = app.profileData.find(class_='bannerSubtitle')
+        level_helper = level_element.text.strip()
+        level_helper_1 = re.sub(r'-.+', '', level_helper)
+        level_helper_2 = re.findall(r'\d+', level_helper_1)
+        return {"level": int(level_helper_2[0])}
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return {"error": f"Error fetching data: {e}"}
 
 @router.get("/rank")
 def get_rank():
