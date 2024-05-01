@@ -16,9 +16,9 @@ const ShowGraphs = () => {
   const [activePlot, setActivePlot] = useState(null);
   const [img, setImg] = useState('');
 
-  useEffect(() =>{
-      console.log('idk')
-  },[img])
+  useEffect(() => {
+    console.log('idk')
+  }, [img])
 
   const handleShowImage = (plot) => {
     if (plot == activePlot) {
@@ -56,7 +56,7 @@ const ShowGraphs = () => {
         </div>
       </div>
       {activePlot && (<div className='flex justify-center'>
-        <img src={img} alt="plot" onClick={handleClick} className='hover:cursor-pointer'/>
+        <img src={img} alt="plot" onClick={handleClick} className='hover:cursor-pointer' />
       </div>)}
     </div>
   );
@@ -82,22 +82,24 @@ const Index = () => {
 
   return (
     <div className="h-screen">
-      <select
-        className="border border-gray-300 rounded p-2 mr-2"
-        value={selectedRank}
-        onChange={handleChange}
-      >
-        <option value="">Select Rank</option>
-        {ranks.map((rank, index) => (
-          <option key={index} value={rank}>{rank}</option>
-        ))}
-      </select>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={fetchData}
-      >
-        Get Data
-      </button>
+      <div className='flex items-center'>
+        <select
+          className="border border-gray-300 rounded p-2 mr-2 flex-1"
+          value={selectedRank}
+          onChange={handleChange}
+        >
+          <option value="">Select Rank</option>
+          {ranks.map((rank, index) => (
+            <option key={index} value={rank}>{rank}</option>
+          ))}
+        </select>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={fetchData}
+        >
+          Get Data
+        </button>
+      </div>
       {showGraphs && <ShowGraphs />}
       <ToastContainer
         position="bottom-right"
