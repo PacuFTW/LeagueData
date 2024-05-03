@@ -65,7 +65,7 @@ const ShowGraphs = () => {
 const Index = () => {
   const [selectedRank, setSelectedRank] = useState('');
   const [showGraphs, setShowGraphs] = useState(null);
-  const ranks = ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger'];
+  const ranks = ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald', 'Diamond', 'Master', 'Grandmaster', 'Challenger'];
 
   const handleChange = (event) => {
     setSelectedRank(event.target.value);

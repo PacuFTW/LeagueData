@@ -35,7 +35,7 @@ const Champions = ({ champions }) => {
                 <div key={index} className="border rounded-lg p-4 bg-gray-800 relative">
                     <div className="flex justify-between items-center">
                         <h2 className="text-xl font-bold mb-2">{champion.name}</h2>
-                        <img src={"https://static.bigbrain.gg/assets/lol/riot_static/14.8.1/img/champion/" + champion.name + ".png"} alt={champion.name} className="h-16 w-16 mr-2" />
+                        <img src={"https://static.bigbrain.gg/assets/lol/riot_static/14.8.1/img/champion/" + champion.name.replace(/[, ]+/g, '') + ".png"} alt={champion.name} className="h-16 w-16 mr-2" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div>
